@@ -1,2 +1,9 @@
-# triple-m
-A simple website to practice mental math
+# Mental Math Monster 
+
+A customizable website catered to practcing and improving your mental math skills.
+
+## Features
+
+## Contribution
+
+## Tools & Technology
