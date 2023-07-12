@@ -6,4 +6,4 @@ A customizable website catered to practcing and improving your mental math skill
 
 ## Contribution
 
-## Tools & Technology
+## Tools & Technologies
