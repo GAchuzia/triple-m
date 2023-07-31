@@ -1,0 +1,9 @@
+Quiz fields:
+
+- id
+- type
+- content
+- answer
+- history_attempts
+- history_correct
+- rating
