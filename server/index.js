@@ -8,7 +8,7 @@ const mysql = require('mysql');
 const host = "localhost"
 const user = "root"
 const passwd = ""
-const database = "triplem"
+const database = "triplem" //CRUDDataBase
 const db = mysql.createPool({
     host: host,
     user: user,
@@ -25,7 +25,7 @@ app.get("/api/get", (req, res) => {
     db.query(sqlCheck, (err, result) => {
         console.log(result);
         if (!result.length) {
-            sqlCreateTable = "CREATE TABLE questions (id INT, type VARCHAR(255), content JSON, answer INT, history_attempts INT, history_correct INT, rating FLOAT)";
+            sqlCreateTable = "CREATE TABLE questions (id INT NOT NULL primary key AUTO_INCREMENT, type VARCHAR(255) NOT NULL, content JSON NOT NULL, answer INT NOT NULL, history_attempts INT NOT NULL, history_correct INT NOT NULL, rating FLOAT NOT NULL)";
             db.query(sqlCreateTable, (err, result) => {
                 console.log(err);
             });
