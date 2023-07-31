@@ -1,16 +1,19 @@
-// Start with $npm run devStart
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
 
+//configure credentials
+const host = "localhost"
+const user = "root"
+const passwd = ""
+const database = "triplem"
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'CRUDDataBase'
+    host: host,
+    user: user,
+    password: passwd,
+    database: database
 });
 
 app.use(cors());
@@ -18,6 +21,17 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({extend: true}));
 
 app.get("/api/get", (req, res) => {
+    sqlCheck = "SHOW TABLES;"
+    db.query(sqlCheck, (err, result) => {
+        console.log(result);
+        if (!result.length) {
+            sqlCreateTable = "CREATE TABLE questions (id INT, type VARCHAR(255), content JSON, answer INT, history_attempts INT, history_correct INT, rating FLOAT)";
+            db.query(sqlCreateTable, (err, result) => {
+                console.log(err);
+            });
+        }
+    });
+
     const sqlSelect = "SELECT * FROM movie_reviews;";
     db.query(sqlSelect, (err, result) => {
         res.send(result);
