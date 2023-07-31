@@ -1,0 +1,6 @@
+- Generate table
+- Reconfig get
+- Reconfig post
+- Reconfig put
+- Reconfig delete
+- move credentials to environment (via source ./.sh file)
