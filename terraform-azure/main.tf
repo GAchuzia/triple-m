@@ -1,3 +1,5 @@
+# find public ip via $terraform state show azurerm_linux_virtual_machine.tm_vm
+
 # We strongly recommend using the required_providers block to set the
 # Azure Provider source and version being used
 terraform {
@@ -125,9 +127,6 @@ resource "azurerm_linux_virtual_machine" "tm_vm" {
   admin_username        = "linuxuser"
   network_interface_ids = [azurerm_network_interface.tm_net_interface.id]
 
-  # Run Node Provision Script
-  custom_data = filebase64("provision.tpl")
-
   admin_ssh_key {
     username   = "linuxuser"
     public_key = tls_private_key.key_generation.public_key_openssh
@@ -147,6 +146,36 @@ resource "azurerm_linux_virtual_machine" "tm_vm" {
 
   depends_on = [
     azurerm_network_interface.tm_net_interface,
-    tls_private_key.key_generation
   ]
+}
+
+data "azurerm_public_ip" "data_public_ip" {
+  name                = azurerm_public_ip.tm_ip.name
+  resource_group_name = azurerm_public_ip.tm_ip.resource_group_name
+}
+
+# template provision file
+data "template_file" "provision_file" {
+  template = file("provision.tpl")
+  vars     = {}
+}
+
+output "print_public_ip" {
+  value = data.azurerm_public_ip.data_public_ip.ip_address
+}
+
+# Run provision
+resource "null_resource" "provision" {
+  depends_on = [azurerm_linux_virtual_machine.tm_vm, data.azurerm_public_ip.data_public_ip]
+
+  provisioner "remote-exec" {
+    inline = ["${data.template_file.provision_file.rendered}"]
+  }
+
+  connection {
+    host        = "$data.azurerm_public_ip.data_public_ip.ip_address"
+    type        = "ssh"
+    user        = "linxuser"
+    private_key = tls_private_key.key_generation.private_key_pem
+  }
 }
