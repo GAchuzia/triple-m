@@ -5,6 +5,6 @@ sudo apt-get install -y vim
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo apt-get install -y build-essential
-mkdir gitrepos
-cd gitrepos && sudo git clone https://github.com/GAchuzia/triple-m.git
-cd gitrepos/triple-m && ls -a
+mkdir /root/gitrepos
+cd /root/gitrepos && sudo git clone https://github.com/GAchuzia/triple-m.git
+cd /root/gitrepos/triple-m && ls -a

@@ -118,6 +118,18 @@ resource "local_file" "tm_key" {
   content  = tls_private_key.key_generation.private_key_pem
 }
 
+# # template provision file
+# data "template_file" "provision_file" {
+#   template = file("provision.tpl")
+#   vars     = {}
+# }
+
+resource "null_resource" "test" {
+  provisioner "local-exec" {
+    command = "echo ${data.azurerm_public_ip.data_public_ip.ip_address}"
+  }
+}
+
 # Create VM
 resource "azurerm_linux_virtual_machine" "tm_vm" {
   name                  = var.compute_name
@@ -128,11 +140,11 @@ resource "azurerm_linux_virtual_machine" "tm_vm" {
   network_interface_ids = [azurerm_network_interface.tm_net_interface.id]
 
   # Run Node Provision Script
-  # custom_data = filebase64("provision.tpl")
+   custom_data = filebase64("provision.sh")
 
   admin_ssh_key {
     username   = "linuxuser"
-    public_key = file("C:/Users/wongm/.ssh/key.pub") #tls_private_key.key_generation.public_key_openssh
+    public_key = tls_private_key.key_generation.public_key_openssh
   }
 
   os_disk {
@@ -147,17 +159,17 @@ resource "azurerm_linux_virtual_machine" "tm_vm" {
     version   = "latest"
   }
 
-  provisioner "remote-exec" {
-    inline = ["${data.template_file.provision_file.rendered}"]
+  # provisioner "remote-exec" {
+  #   inline = ["${data.template_file.provision_file.rendered}"]
 
-    connection {
-      host        = data.azurerm_public_ip.data_public_ip.ip_address
-      type        = "ssh"
-      user        = "linxuser"
-      private_key = file("C:/Users/wongm/.ssh/key") #tls_private_key.key_generation.private_key_pem
-      timeout     = "5m"
-    }
-  }
+  #   connection {
+  #     host        = data.azurerm_public_ip.data_public_ip.ip_address
+  #     type        = "ssh"
+  #     user        = "linxuser"
+  #     private_key = tls_private_key.key_generation.private_key_pem
+  #     timeout     = "5m"
+  #   }
+  # }
 
   depends_on = [
     azurerm_network_interface.tm_net_interface,
@@ -169,20 +181,8 @@ data "azurerm_public_ip" "data_public_ip" {
   resource_group_name = azurerm_public_ip.tm_ip.resource_group_name
 }
 
-# template provision file
-data "template_file" "provision_file" {
-  template = file("provision.tpl")
-  vars     = {}
-}
-
 output "print_public_ip" {
   value = data.azurerm_public_ip.data_public_ip.ip_address
-}
-
-resource "null_resource" "test" {
-  provisioner "local-exec" {
-    command = "echo ${data.azurerm_public_ip.data_public_ip.ip_address}"
-  }
 }
 
 # Run provision
@@ -197,7 +197,7 @@ resource "null_resource" "test" {
 #     host        = "${data.azurerm_public_ip.data_public_ip.ip_address}"
 #     type        = "ssh"
 #     user        = "linxuser"
-#     private_key = file("C:/Users/wongm/Documents/GitHub/triple-m/terraform-azure/key")#tls_private_key.key_generation.private_key_pem
+#     private_key = file("C:/Users/wongm/Documents/GitHub/triple-m/terraform-azure/key") #tls_private_key.key_generation.private_key_pem
 #     timeout "5m"
 #   }
 # }
