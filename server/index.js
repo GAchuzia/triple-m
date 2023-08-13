@@ -52,6 +52,7 @@ app.post('/api/insert', (req, res) => {
         if (err) {
             console.log(err);
         }
+        res.send(result);
     });
 });
 
@@ -64,6 +65,7 @@ app.delete('/api/delete', (req, res) => {
         if (err) {
             console.log(err);
         }
+        res.send(result);
     });
 });
 
@@ -82,6 +84,7 @@ app.put('/api/update/', (req, res) => {
         if (err) {
             console.log(err);
         }
+        res.send(result);
     });
 });
 
