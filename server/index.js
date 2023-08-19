@@ -8,7 +8,7 @@ const mysql = require('mysql');
 const host = "localhost"
 const user = "root"
 const passwd = ""
-const database = "triplem" //CRUDDataBase
+const database = "triplem"
 const db = mysql.createPool({
     host: host,
     user: user,
@@ -32,44 +32,59 @@ app.get("/api/get", (req, res) => {
         }
     });
 
-    const sqlSelect = "SELECT * FROM movie_reviews;";
+    const sqlSelect = "SELECT * FROM questions;";
     db.query(sqlSelect, (err, result) => {
         res.send(result);
     });
 });
 
+// example: {"type": "addition", "content": '{"1": "14", "2": "27"}', "answer": "test", "attempts": "0", "correct": "0", "rating": "0"}
 app.post('/api/insert', (req, res) => {
-    const movieName = req.body.movieName;
-    const movieReview = req.body.movieReview;
+    const type = req.body.type;
+    const content = req.body.content;
+    const answer = req.body.answer;
+    const attempts = req.body.attempts;
+    const correct = req.body.correct;
+    const rating = req.body.rating;
 
-    const sqlInsert = "INSERT INTO movie_reviews (movieName, movieReview) VALUES (?,?);"
-    db.query(sqlInsert, [movieName, movieReview], (err, result) => {
+    const sqlInsert = "INSERT INTO questions (type, content, answer, history_attempts, history_correct, rating) VALUES (?,?,?,?,?,?);"
+    db.query(sqlInsert, [type, content, answer, attempts, correct, rating], (err, result) => {
         if (err) {
             console.log(err);
         }
+        res.send(result);
     });
 });
 
-app.delete('/api/delete/:movieName', (req, res) => {
-    const name = req.params.movieName;
+// example: { "id": "7" }
+app.delete('/api/delete', (req, res) => {
+    const id = req.body.id;
     
-    const sqlDelete = "DELETE FROM movie_reviews WHERE movieName = ?;"
-    db.query(sqlDelete, name, (err, result) => {
+    const sqlDelete = "DELETE FROM questions WHERE id = ?;"
+    db.query(sqlDelete, id, (err, result) => {
         if (err) {
             console.log(err);
         }
+        res.send(result);
     });
 });
 
+// example: {"id": "8", "type": "addition", "content": '{"1": "21", "2": "21"}', "answer": "test", "attempts": "0", "correct": "0", "rating": "0"}
 app.put('/api/update/', (req, res) => {
-    const name = req.body.movieName;
-    const review = req.body.movieReview;
+    const id = req.body.id;
+    const type = req.body.type;
+    const content = req.body.content;
+    const answer = req.body.answer;
+    const attempts = req.body.attempts;
+    const correct = req.body.correct;
+    const rating = req.body.rating;
 
-    const sqlUpdate = "UPDATE movie_reviews SET movieReview = ? WHERE movieName = ?;"
-    db.query(sqlUpdate, [review, name], (err, result) => {
+    const sqlUpdate = "UPDATE questions SET type = ?, content = ?, answer = ?, history_attempts = ?, history_correct = ?, rating = ? WHERE id = ?;"
+    db.query(sqlUpdate, [type, content, answer, attempts, correct, rating, id], (err, result) => {
         if (err) {
             console.log(err);
         }
+        res.send(result);
     });
 });
 
