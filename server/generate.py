@@ -21,9 +21,11 @@ def main():
 
     # Validate operation chosen
     if (args.operation == "addition" or args.operation == "subtraction" or args.operation == "multiplication" or args.operation == "division"):
-        print("Running", file=sys.stderr, end="")
+        print("Generating", file=sys.stderr, end="")
         for i in range(args.quantity):
             create_case(args.operation, args.fields, args.maximum, args.minimum)
+        print("\nRemoving Duplicates", file=sys.stderr, end="")
+        remove_dup()
         print("\nDone", file=sys.stderr)
     else:
         print("ERROR, Operation not valid", file=sys.stderr)
@@ -68,6 +70,24 @@ def create_case(operation:str, fields:int, max:int, min:int):
     query = {"type": operation, "content": json.dumps(content, indent=4), "answer": str(answer), "attempts": "0", "correct": "0", "rating": "0"}
     response = requests.post('http://localhost:3001/api/insert/', json=query, timeout=1)
     print(".", file=sys.stderr, end="")
+
+# Remove duplicates
+def remove_dup():
+    response = requests.get('http://localhost:3001/api/dup/', timeout=1)
+    data = json.loads(response.text)
+    
+    target = {}
+    for question in data:
+        if target == {}:
+            target = question
+        elif target['answer'] != question['answer']:
+            target = question
+        else:
+            query = {"id": question['id']}
+            requests.delete('http://localhost:3001/api/delete/', json=query, timeout=1)
+            print(".", file=sys.stderr, end="")
+            
+
 
 
 if __name__ == "__main__":

@@ -38,6 +38,13 @@ app.get("/api/get", (req, res) => {
     });
 });
 
+app.get("/api/dup", (req, res) => {
+    const sqlPrune = "SELECT a.* FROM questions a JOIN (SELECT type, content, COUNT(*) FROM questions GROUP BY type, content HAVING count(*) > 1 ) b ON a.type = b.type AND a.content = b.content ORDER BY a.content;";
+    db.query(sqlPrune, (err, result) => {
+        res.send(result);
+    });
+});
+
 // example: {"type": "addition", "content": '{"1": "14", "2": "27"}', "answer": "test", "attempts": "0", "correct": "0", "rating": "0"}
 app.post('/api/insert', (req, res) => {
     const type = req.body.type;
